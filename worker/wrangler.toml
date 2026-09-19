@@ -1,0 +1,22 @@
+# Optional: only needed if you deploy with the Wrangler CLI instead of pasting the code into the Cloudflare dashboard.
+name = "kazi-forms"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+# Public (non-secret) settings. Secrets are set separately:
+#   wrangler secret put BREVO_API_KEY
+#   wrangler secret put TURNSTILE_SECRET   (optional)
+[vars]
+SENDER_EMAIL = "quotes@kazi-electronics.com"
+SENDER_NAME = "Kazi Electronics Services"
+STAFF_EMAIL = "sales@kazi-electronics.com"
+REPLY_TO_EMAIL = "sales@kazi-electronics.com"
+ALLOWED_ORIGINS = "https://kazi-electronics.com,https://www.kazi-electronics.com"
+WHATSAPP_NUMBER = "255715267903"
+# BREVO_LIST_ID_EN = "3"
+# BREVO_LIST_ID_SW = "4"
+
+# Custom domain for the Worker (creates the DNS record automatically since the domain is on Cloudflare):
+# [[routes]]
+# pattern = "api.kazi-electronics.com"
+# custom_domain = true

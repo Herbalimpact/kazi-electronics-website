@@ -1,0 +1,11 @@
+{
+  "name": "kazi-electronics-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bilingual (English/Kiswahili) static website for Kazi Electronics Services",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test:worker": "node worker/test.mjs"
+  },
+  "engines": { "node": ">=18" }
+}
