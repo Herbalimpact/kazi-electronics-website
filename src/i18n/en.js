@@ -29,7 +29,7 @@ module.exports = {
   },
 
   nav: [
-    ['products', 'Products'], ['services', 'Services'], ['projects', 'Projects & clients'],
+    ['home', 'Home'], ['products', 'Products'], ['services', 'Services'], ['projects', 'Projects & clients'],
     ['about', 'About us'], ['contact', 'Contact']
   ],
 
