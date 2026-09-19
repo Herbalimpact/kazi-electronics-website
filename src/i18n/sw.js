@@ -32,7 +32,7 @@ module.exports = {
   },
 
   nav: [
-    ['products', 'Bidhaa'], ['services', 'Huduma'], ['projects', 'Miradi na wateja'],
+    ['home', 'Mwanzo'], ['products', 'Bidhaa'], ['services', 'Huduma'], ['projects', 'Miradi na wateja'],
     ['about', 'Kuhusu sisi'], ['contact', 'Wasiliana']
   ],
 
