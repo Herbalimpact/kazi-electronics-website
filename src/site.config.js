@@ -23,7 +23,8 @@ module.exports = {
   hoursClose: '17:00',
 
   // Front-end integrations (leave blank until set up — the site falls back to WhatsApp)
-  formEndpoint: '',          // Cloudflare Worker URL, e.g. https://api.kazi-electronics.com/submit
+  formEndpoint: '',          // Cloudflare Worker URL, e.g. https://api.kazi-electronics.com/submit (needs Brevo; takes priority if set)
+  web3formsKey: '',          // FREE alternative: Web3Forms access key (web3forms.com). Requests are emailed to the address the key was created with.
   turnstileSiteKey: '',      // Cloudflare Turnstile site key (optional, blocks spam bots)
   productsSheetCsv: '',      // "Publish to web → CSV" link of the Google Sheet with products & prices
 
