@@ -216,6 +216,11 @@
     if (tsLoaded) { var w = setInterval(function () { if (window.turnstile) { clearInterval(w); cb && cb(); } }, 200); return; }
     tsLoaded = true; var s = document.createElement('script'); s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; s.async = true; s.onload = function () { cb && cb(); }; document.head.appendChild(s);
   }
+  function makeRef() {
+    var t = new Date(), ymd = String(t.getFullYear()).slice(2) + String(t.getMonth() + 1).padStart(2, '0') + String(t.getDate()).padStart(2, '0');
+    var b = new Uint8Array(3); (window.crypto || window.msCrypto).getRandomValues(b);
+    return 'KZ-' + ymd + '-' + Array.prototype.map.call(b, function (x) { return (x % 36).toString(36); }).join('').toUpperCase();
+  }
   function whatsappText(d, items) {
     var L = Q.waLabels, lines = [d.kind === 'contact' ? (T.ui.waHello) : Q.waIntro, ''];
     if (d.typeLabel) lines.push(L.type + ': ' + d.typeLabel);
@@ -244,9 +249,38 @@
       if (f.website && f.website.value) return; // honeypot
       if (!d.name || (!d.phone && !d.email)) { setStatus(Q.errRequired, true); (d.name ? f.phone : f.name).focus(); return; }
       var items = kind === 'quote' ? basket.map(function (i) { return { id: i.id, name: i.n.en, qty: i.qty }; }) : [];
-      if (!K.formEndpoint) { window.open(waLink(whatsappText(d, items.map(function (i) { return { name: i.name, qty: i.qty }; }))), '_blank', 'noopener'); setStatus(Q.fallbackNote, false); return; }
+      if (!K.formEndpoint && !K.web3formsKey) { window.open(waLink(whatsappText(d, items.map(function (i) { return { name: i.name, qty: i.qty }; }))), '_blank', 'noopener'); setStatus(Q.fallbackNote, false); return; }
       if (K.turnstileSiteKey && !token) { setStatus(Q.errSend, true); return; }
       btn.disabled = true; setStatus(Q.sending + '…', false);
+      if (!K.formEndpoint && K.web3formsKey) {
+        // Free path: Web3Forms emails the request to the shop. No autoresponder on the free plan, so we make the reference number here.
+        var ref = makeRef(), typeText = d.typeLabel || (kind === 'contact' ? 'Message' : 'Request');
+        var lines = [];
+        lines.push('Reference: ' + ref, 'Type: ' + typeText, 'Name: ' + d.name);
+        if (d.phone) lines.push('Phone: ' + d.phone);
+        if (d.email) lines.push('Email: ' + d.email);
+        if (d.org) lines.push('Organisation: ' + d.org);
+        if (d.place) lines.push('Location: ' + d.place);
+        lines.push('Reply in: ' + (d.replyLang === 'sw' ? 'Kiswahili' : 'English'));
+        if (d.message) lines.push('', 'Message:', d.message);
+        if (items.length) { lines.push('', 'Products:'); items.forEach(function (i) { lines.push('- ' + i.name + ' x ' + i.qty); }); }
+        lines.push('', 'Sent from: ' + location.href);
+        var w3 = { access_key: K.web3formsKey, subject: '[' + ref + '] ' + typeText + ' - ' + d.name, from_name: 'Kazi Electronics website', name: d.name, message: lines.join('\n') };
+        if (d.email) w3.email = d.email;
+        fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(w3) })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && j && j.success, j: j }; }); })
+          .then(function (res) {
+            if (!res.ok) throw new Error('send');
+            d.ref = ref; var wa = waLink(whatsappText(d, items.map(function (i) { return { name: i.name, qty: i.qty }; })));
+            okBox.innerHTML = '<h2>' + esc(Q.okTitle) + '</h2><p>' + esc(Q.okText(d.name, ref)) + '</p><a class="btn btn-red" target="_blank" rel="noopener" href="' + esc(wa) + '">' + icon('whatsapp') + esc(Q.okWa) + '</a>';
+            form.hidden = true; okBox.hidden = false; okBox.setAttribute('tabindex', '-1'); okBox.focus();
+            if (kind === 'quote') { basket = []; saveBasket(); }
+            form.reset();
+          })
+          .catch(function () { setStatus(Q.errSend, true); })
+          .then(function () { btn.disabled = false; });
+        return;
+      }
       var payload = { type: d.type, name: d.name, phone: d.phone, email: d.email, org: d.org, place: d.place, message: d.message, lang: d.replyLang, page: location.pathname, items: items, token: token };
       fetch(K.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && j && j.ok, j: j }; }); })
