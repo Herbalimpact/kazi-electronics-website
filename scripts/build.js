@@ -324,7 +324,7 @@ function build() {
   fs.copyFileSync(path.join(SRC, 'assets/img/brand/favicon.ico'), path.join(OUT, 'favicon.ico'));
 
   // runtime config + per-language strings
-  write(path.join(OUT, 'assets/js/config.js'), `window.KAZI=${JSON.stringify({ build: BUILD, whatsapp: cfg.whatsapp, formEndpoint: cfg.formEndpoint, turnstileSiteKey: cfg.turnstileSiteKey, productsSheetCsv: cfg.productsSheetCsv })};`);
+  write(path.join(OUT, 'assets/js/config.js'), `window.KAZI=${JSON.stringify({ build: BUILD, whatsapp: cfg.whatsapp, formEndpoint: cfg.formEndpoint, web3formsKey: cfg.web3formsKey || '', turnstileSiteKey: cfg.turnstileSiteKey, productsSheetCsv: cfg.productsSheetCsv })};`);
   for (const lang of Object.keys(LANGS)) {
     const t = LANGS[lang];
     write(path.join(OUT, `assets/js/i18n-${lang}.js`), 'window.KAZI_I18N=' + serialize({ lang, slugs: t.slugs, ui: t.ui, stock: t.stock, categories: t.categories.map((c) => ({ id: c.id, name: c.name })), products: t.products, quote: t.quote, js: t.js, icons: ICONS }) + ';');
