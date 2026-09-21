@@ -122,6 +122,18 @@ in `turnstileSiteKey` in `site.config.js` and the *secret key* in the Worker as 
 
 If a form ever fails, the visitor sees a message and can send the same text on WhatsApp, so no enquiry is lost.
 
+## 6b. Free alternative to Brevo + Worker: Web3Forms (quote and contact forms only)
+
+Use this if Brevo is not set up yet. It costs nothing (free plan: 250 submissions a month, one main recipient).
+
+1. Go to web3forms.com, enter `info@kazi-electronics.com`, and create the access key. It is emailed to that address.
+2. In `src/site.config.js` set `web3formsKey: 'your-access-key'` (leave `formEndpoint` blank), commit, wait for the green build.
+3. Test: send a quote in English and Kiswahili. `info@` receives each request with a reference number in the subject.
+
+Notes: the access key is meant to be public (it only lets people send email to that one inbox). The free plan sends
+no acknowledgement email to the customer and keeps 30 days of history, so keep the emails. The footer newsletter box stays
+hidden (it needs Brevo). If `formEndpoint` is later set (Brevo Worker), it takes priority over Web3Forms.
+
 ## 7. Products and prices: the Google Sheet (Joel's job)
 
 1. Create a Google Sheet and import `docs/products-template.csv` (File → Import → Upload → *Replace current sheet*).
