@@ -216,6 +216,13 @@
     if (tsLoaded) { var w = setInterval(function () { if (window.turnstile) { clearInterval(w); cb && cb(); } }, 200); return; }
     tsLoaded = true; var s = document.createElement('script'); s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; s.async = true; s.onload = function () { cb && cb(); }; document.head.appendChild(s);
   }
+  // hCaptcha for the free Web3Forms path. This is Web3Forms' shared free-plan site key (documented at docs.web3forms.com); it is public by design.
+  var HC_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2', hcLoaded = false;
+  function loadHcaptcha(cb) {
+    if (window.hcaptcha) return cb && cb();
+    if (hcLoaded) { var w = setInterval(function () { if (window.hcaptcha) { clearInterval(w); cb && cb(); } }, 200); return; }
+    hcLoaded = true; var s = document.createElement('script'); s.src = 'https://js.hcaptcha.com/1/api.js?render=explicit'; s.async = true; s.onload = function () { cb && cb(); }; document.head.appendChild(s);
+  }
   function makeRef() {
     var t = new Date(), ymd = String(t.getFullYear()).slice(2) + String(t.getMonth() + 1).padStart(2, '0') + String(t.getDate()).padStart(2, '0');
     var b = new Uint8Array(3); (window.crypto || window.msCrypto).getRandomValues(b);
@@ -242,6 +249,8 @@
     var sel = $('select[name=type]', form), m = /[?&]type=([a-z]+)/.exec(location.search);
     if (sel && m) { for (var i = 0; i < sel.options.length; i++) if (sel.options[i].value === m[1]) sel.value = m[1]; }
     if (K.turnstileSiteKey) { var slot = $('.ts-slot', form); loadTurnstile(function () { if (slot && window.turnstile) window.turnstile.render(slot, { sitekey: K.turnstileSiteKey, callback: function (t) { token = t; } }); }); }
+    var hcToken = '', hcId = null, useW3 = !K.formEndpoint && !!K.web3formsKey;
+    if (useW3) { var hcSlot = $('.ts-slot', form); if (hcSlot) loadHcaptcha(function () { if (window.hcaptcha) hcId = window.hcaptcha.render(hcSlot, { sitekey: HC_SITEKEY, callback: function (t) { hcToken = t; }, 'expired-callback': function () { hcToken = ''; }, 'error-callback': function () { hcToken = ''; } }); }); }
     function setStatus(msg, err) { status.textContent = msg || ''; status.classList.toggle('err', !!err); }
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -251,6 +260,7 @@
       var items = kind === 'quote' ? basket.map(function (i) { return { id: i.id, name: i.n.en, qty: i.qty }; }) : [];
       if (!K.formEndpoint && !K.web3formsKey) { window.open(waLink(whatsappText(d, items.map(function (i) { return { name: i.name, qty: i.qty }; }))), '_blank', 'noopener'); setStatus(Q.fallbackNote, false); return; }
       if (K.turnstileSiteKey && !token) { setStatus(Q.errSend, true); return; }
+      if (useW3 && hcId !== null && !hcToken) { setStatus(lang === 'sw' ? 'Tafadhali thibitisha kuwa wewe si roboti.' : 'Please tick the box to confirm you are not a robot.', true); return; }
       btn.disabled = true; setStatus(Q.sending + '…', false);
       if (!K.formEndpoint && K.web3formsKey) {
         // Free path: Web3Forms emails the request to the shop. No autoresponder on the free plan, so we make the reference number here.
@@ -267,6 +277,7 @@
         lines.push('', 'Sent from: ' + location.href);
         var w3 = { access_key: K.web3formsKey, subject: '[' + ref + '] ' + typeText + ' - ' + d.name, from_name: 'Kazi Electronics website', name: d.name, message: lines.join('\n') };
         if (d.email) w3.email = d.email;
+        if (hcToken) w3['h-captcha-response'] = hcToken;
         fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(w3) })
           .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && j && j.success, j: j }; }); })
           .then(function (res) {
@@ -278,7 +289,7 @@
             form.reset();
           })
           .catch(function () { setStatus(Q.errSend, true); })
-          .then(function () { btn.disabled = false; });
+          .then(function () { btn.disabled = false; hcToken = ''; if (hcId !== null && window.hcaptcha) try { window.hcaptcha.reset(hcId); } catch (x) {} });
         return;
       }
       var payload = { type: d.type, name: d.name, phone: d.phone, email: d.email, org: d.org, place: d.place, message: d.message, lang: d.replyLang, page: location.pathname, items: items, token: token };
