@@ -144,6 +144,9 @@ ul,ol{margin:0;padding:0}
 .photos{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
 .photo{margin:0}
 .photo img,.ph{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:var(--paper-2)}
+.photos{align-items:start}
+.photos.tall img,.photos.tall .ph{aspect-ratio:3/4}
+.photo video{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;background:#0F1B33}
 .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--steel);border:2px dashed #B7C3D8;background:repeating-linear-gradient(135deg,#F3F6FA 0 12px,#ECF1F8 12px 24px);text-align:center;padding:12px;font-weight:600}
 .ph .ico{width:34px;height:34px}
 .ph small{font-weight:400;font-size:.85rem}

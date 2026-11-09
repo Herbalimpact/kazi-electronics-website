@@ -94,6 +94,10 @@ const other = (lang) => (lang === 'en' ? 'sw' : 'en');
 
 /* ───────────── shared blocks ───────────── */
 function slotImage(ctx, dir, name, label) {
+  if (exists(path.join(SRC, 'assets/img', dir, `${name}.mp4`))) {
+    const poster = exists(path.join(SRC, 'assets/img', dir, `${name}-poster.webp`)) ? ` poster="${ctx.rel}assets/img/${dir}/${name}-poster.webp"` : '';
+    return `<figure class="photo"><video src="${ctx.rel}assets/img/${dir}/${name}.mp4"${poster} controls muted playsinline preload="none" aria-label="${esc(label)}"></video><figcaption>${esc(label)}</figcaption></figure>`;
+  }
   for (const ext of ['webp', 'jpg', 'jpeg', 'png']) {
     if (exists(path.join(SRC, 'assets/img', dir, `${name}.${ext}`))) {
       return `<figure class="photo"><img src="${ctx.rel}assets/img/${dir}/${name}.${ext}" alt="${esc(label)}" loading="lazy" decoding="async"><figcaption>${esc(label)}</figcaption></figure>`;
@@ -180,8 +184,8 @@ function aboutBody(ctx) {
 <h2 style="margin-top:1.2em">${esc(a.whatTitle)}</h2><p>${esc(a.whatText)} <a class="link-more" href="${link(ctx, 'services')}">${esc(a.whatLink)}</a></p></div>
 <div><h2 style="font-size:1.7rem">${esc(a.detailsTitle)}</h2><dl class="facts">${a.details.map((d) => `<div><dt>${esc(d[0])}</dt><dd>${esc(d[1])}</dd></div>`).join('')}</dl></div></div></section>` +
     `<section class="section alt"><div class="wrap"><div class="section-head"><h2>${esc(a.commitmentsTitle)}</h2></div><div class="rules">${a.commitments.map((c) => `<div class="rule"><h3>${esc(c.title)}</h3><p>${esc(c.text)}</p></div>`).join('')}</div></div></section>` +
-    (team ? `<section class="section"><div class="wrap"><div class="section-head"><h2>${esc(a.teamTitle)}</h2><p>${esc(a.teamText)}</p></div><div class="photos">${team}</div></div></section>` : '') +
-    (shop ? `<section class="section alt"><div class="wrap"><div class="section-head"><h2>${esc(a.workshopTitle)}</h2><p>${esc(a.workshopText)}</p></div><div class="photos">${shop}</div></div></section>` : '') +
+    (team ? `<section class="section"><div class="wrap"><div class="section-head"><h2>${esc(a.teamTitle)}</h2><p>${esc(a.teamText)}</p></div><div class="photos tall">${team}</div></div></section>` : '') +
+    (shop ? `<section class="section alt"><div class="wrap"><div class="section-head"><h2>${esc(a.workshopTitle)}</h2><p>${esc(a.workshopText)}</p></div><div class="photos tall">${shop}</div></div></section>` : '') +
     `<section class="section"><div class="wrap split"><div><h2>${esc(a.visitTitle)}</h2>${visitBox(ctx)}</div><div>${ctaPanelSmall(ctx)}</div></div></section>`;
 }
 function visitBox(ctx) {

@@ -127,7 +127,7 @@ module.exports = {
     teamSlots: ['Mafundi kazini', 'Wahandisi wa programu na mitandao', 'Mauzo na huduma kwa wateja'],
     workshopTitle: 'Karakana yetu',
     workshopText: 'Vifaa vya kutengeneza kompyuta, kusimika mitandao na kutafuta hitilafu.',
-    workshopSlots: ['Meza ya ukarabati', 'Upimaji na uchunguzi'],
+    workshopSlots: ['Meza ya ukarabati', 'Upimaji na uchunguzi', 'Ukarabati wa mashine za photocopy'],
     detailsTitle: 'Taarifa za kampuni',
     details: [['Jina la kisheria', 'Kazi Electronics Services'], ['Ilisajiliwa', 'Aprili 2008, Tanzania'], ['Cheti cha Usajili', 'Na. 179861'], ['Anwani ya posta', 'S.L.P. 13700, Dar es Salaam']],
     visitTitle: 'Tutembelee'

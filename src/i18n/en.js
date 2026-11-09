@@ -124,7 +124,7 @@ module.exports = {
     teamSlots: ['Technicians at work', 'Software and network engineers', 'Sales and customer care'],
     workshopTitle: 'Our workshop',
     workshopText: 'Tools for hardware repair, network installation and troubleshooting.',
-    workshopSlots: ['Repair bench', 'Testing and diagnostics'],
+    workshopSlots: ['Repair bench', 'Testing and diagnostics', 'Photocopier servicing'],
     detailsTitle: 'Company details',
     details: [['Legal name', 'Kazi Electronics Services'], ['Registered', 'April 2008, Tanzania'], ['Certificate of Incorporation', 'No. 179861'], ['Postal address', 'P.O. Box 13700, Dar es Salaam']],
     visitTitle: 'Visit us'
